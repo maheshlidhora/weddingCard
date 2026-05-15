@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wedding Invitation</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500&family=Great+Vibes&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f1;
+            overflow-x: hidden;
+            /* Ensure there is enough vertical space for the card to pop up without hitting the top */
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem 0;
+        }
+
+        .serif { font-family: 'Playfair Display', serif; }
+        .script { font-family: 'Great Vibes', cursive; }
+
+        /* Adjusted Wrapper to prevent overflow */
+        .envelope-wrapper {
+            perspective: 1500px;
+            cursor: pointer;
+            margin-top: 100px; /* Space for the card to move into */
+            transition: margin-top 0.8s ease;
+        }
+
+        /* Shift the whole envelope down when opening to make room at the top */
+        .envelope-wrapper.is-open {
+            margin-top: 250px;
+        }
+
+        .envelope {
+            position: relative;
+            width: 300px;
+            height: 210px;
+            background: #ffffff;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            transition: transform 0.8s ease;
+            transform-style: preserve-3d;
+        }
+
+        .flap {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #ffffff;
+            clip-path: polygon(0 0, 100% 0, 50% 50%);
+            transform-origin: top;
+            transition: transform 0.6s ease-in-out;
+            z-index: 30;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .envelope.open .flap {
+            transform: rotateX(180deg);
+            z-index: 5;
+        }
+
+        .pocket {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #ffffff;
+            clip-path: polygon(0 0, 0 100%, 100% 100%, 100% 0, 50% 50%);
+            z-index: 20;
+            border-top: 1px solid #f3f4f6;
+        }
+
+        .invitation-card {
+            position: absolute;
+            top: 5%;
+            left: 5%;
+            width: 90%;
+            height: 180%; /* Taller than envelope */
+            background: #fff;
+            z-index: 10;
+            transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s ease;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            transform: translateY(0);
+            padding: 1.5rem;
+            border: 6px solid #f3f4f1;
+            opacity: 0;
+            pointer-events: none;
+            overflow-y: auto; /* Allow internal scroll if text is long on tiny screens */
+        }
+
+        /* Improved responsive transformation */
+        .envelope.open .invitation-card {
+            transform: translateY(-65%) scale(1);
+            opacity: 1;
+            z-index: 40;
+            pointer-events: auto;
+        }
+
+        @media (min-width: 768px) {
+            .envelope { width: 450px; height: 310px; }
+            .invitation-card { padding: 2rem; border-width: 8px; }
+            .envelope.open .invitation-card { transform: translateY(-70%) scale(1.05); }
+            .envelope-wrapper.is-open { margin-top: 350px; }
+        }
+
+        .wax-seal {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -20%);
+            width: 50px;
+            height: 50px;
+            background: #b89c6d;
+            border-radius: 50%;
+            z-index: 35;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: inset 0 -2px 5px rgba(0,0,0,0.2), 0 4px 10px rgba(0,0,0,0.1);
+            transition: opacity 0.3s ease;
+        }
+
+        .envelope.open .wax-seal { opacity: 0; pointer-events: none; }
+        .wax-seal::after { content: 'M & N'; color: #fff; font-family: 'Playfair Display'; font-size: 0.75rem; font-weight: bold; }
+    </style>
+</head>
+<body class="p-4 sm:p-8">
+
+    <div class="relative w-full max-w-4xl flex flex-col items-center">
+        
+        <div id="instruction" class="mb-8 text-center transition-opacity duration-500">
+            <h2 class="serif text-xl md:text-2xl text-gray-800 mb-1">A Special Invitation</h2>
+            <p class="text-gray-500 text-sm italic">Tap to reveal the magic</p>
+        </div>
+
+        <div id="wrapper" class="envelope-wrapper" onclick="toggleEnvelope()">
+            <div id="envelope" class="envelope">
+                <div class="flap"><div class="absolute inset-0 bg-gray-50 opacity-50" style="clip-path: polygon(0 0, 100% 0, 50% 50%);"></div></div>
+                <div class="wax-seal"></div>
+                <div class="pocket"></div>
+
+                <div class="invitation-card flex flex-col items-center text-center">
+                    <div class="absolute inset-2 border border-gray-100 pointer-events-none"></div>
+                    
+                    <h3 class="serif text-[10px] tracking-[0.3em] uppercase text-gray-400 mb-3">The Wedding of</h3>
+
+                    <div class="flex gap-2 md:gap-4 mb-4">
+                        <div class="w-20 h-28 md:w-28 md:h-40 bg-gray-100 rounded-t-full overflow-hidden border-2 border-white shadow-sm">
+                            <img src="./mahesh.jpeg" alt="Groom" class="w-full h-full object-cover">
+                        </div>
+                        <div class="w-20 h-28 md:w-28 md:h-40 bg-gray-100 rounded-t-full overflow-hidden border-2 border-white shadow-sm">
+                            <img src="./neha.jpeg" alt="Bride" class="w-full h-full object-cover">
+                        </div>
+                    </div>
+
+                    <h1 class="script text-3xl md:text-5xl text-[#b89c6d] mb-1">Mahesh & Neha</h1>
+                    
+                    <p class="serif text-[11px] md:text-xs italic text-gray-500 px-2 mb-4 leading-relaxed">
+                        Together with their families, they invite you to celebrate their union.
+                    </p>
+
+                    <div class="flex flex-col items-center border-t border-b border-gray-100 py-2 md:py-3 w-full mb-4">
+                        <span class="serif text-xs md:text-sm text-gray-800 tracking-widest uppercase">June 21st, 2026</span>
+                        <div class="h-px w-8 bg-[#b89c6d] my-1"></div>
+                        <span class="serif text-[10px] text-gray-500">AT SIX O'CLOCK IN THE EVENING</span>
+                    </div>
+
+                    <div class="mb-4">
+                        <p class="serif text-[10px] md:text-xs font-bold text-gray-800 tracking-wide uppercase">Chitransh Garden, Barwasagar</p>
+                        <p class="text-[9px] md:text-[10px] text-gray-400 mt-0.5">Jhansi, Uttar Pradesh, India, 284201</p>
+                    </div>
+
+                    <!-- <button class="mt-auto bg-[#b89c6d] text-white px-6 py-2 rounded-full text-[10px] tracking-widest uppercase hover:bg-[#a68b5d] active:scale-95 transition-all shadow-md" onclick="event.stopPropagation();">
+                        Confirm RSVP
+                    </button> -->
+                </div>
+            </div>
+        </div>
+
+        <div id="opened-message" class="fixed bottom-10 opacity-0 text-center transition-opacity duration-1000 pointer-events-none">
+            <p class="text-gray-400 text-xs uppercase tracking-widest">Tap anywhere to close</p>
+        </div>
+    </div>
+
+    <script>
+        let isOpen = false;
+
+        function toggleEnvelope() {
+            const envelope = document.getElementById('envelope');
+            const wrapper = document.getElementById('wrapper');
+            const instruction = document.getElementById('instruction');
+            const openedMsg = document.getElementById('opened-message');
+            
+            isOpen = !isOpen;
+
+            if (isOpen) {
+                envelope.classList.add('open');
+                wrapper.classList.add('is-open');
+                instruction.classList.add('opacity-0');
+                openedMsg.classList.add('opacity-100');
+                
+                // Scroll to center the opened invitation if it's a small screen
+                setTimeout(() => {
+                    window.scrollTo({
+                        top: wrapper.offsetTop - 50,
+                        behavior: 'smooth'
+                    });
+                }, 300);
+            } else {
+                envelope.classList.remove('open');
+                wrapper.classList.remove('is-open');
+                instruction.classList.remove('opacity-0');
+                openedMsg.classList.remove('opacity-100');
+            }
+        }
+
+        // Close on escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && isOpen) toggleEnvelope();
+        });
+    </script>
+</body>
+</html>
